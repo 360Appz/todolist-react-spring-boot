@@ -11,29 +11,38 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
 import java.security.PublicKey;
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
-
-
-
+import com.example.todolist.model.taskStatus;
 //Imports model, Exception handling, and repository;
 import com.example.todolist.model.tasks;
 import com.example.todolist.repository.TaskRepository;
+import com.example.todolist.repository.TaskStatusRepository;
 import com.example.todolist.ResourceNotFoundException;
+
 
 @CrossOrigin(origins= "http://localhost:3000")
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class TasksController {
 	
 	@Autowired
 	private TaskRepository task_repository;
+	
+	@Autowired
+	private TaskStatusRepository task_status_repository;
 	
 	
 	//Get All Tasks
@@ -43,20 +52,57 @@ public class TasksController {
 		return task_repository.findAll();
 	}
 	
+	//Get Task Statuses , to be rendered to create/edit drop down
+	@GetMapping("/taskStatuses")
+	public List<String> getAllTaskStatuses()
+	{
+		List<taskStatus> taskStatusList = task_status_repository.findAll();
+		List<String> taskStatuses = new ArrayList<>();
+		
+		for(taskStatus status :  taskStatusList)
+		{
+			taskStatuses.add(status.getStatus());
+		}
+		
+		return taskStatuses;
+	}
+	
 	//Create Task
-	@PostMapping("/tasks")
-	public tasks createTasks(@RequestBody tasks task)
+	@PostMapping("/createTask")
+	public @ResponseBody String createTasks(@RequestParam String task_name, String description, taskStatus status, Date dueDate)
+	{
+		tasks task = new tasks();
+		task.set_task_name(task_name);
+		task.set_description(description);
+		task.set_status(status);
+		task.set_date(dueDate);
+		
+		//Set Current Timestamp
+		LocalDateTime currentDateTime = LocalDateTime.now();
+		Timestamp currentTimestamp = Timestamp.valueOf(currentDateTime);
+		task.setTimestamp(currentTimestamp);
+		
+		task_repository.save(task);
+		
+		return "task are save";
+		
+	}
+	
+	/*
+	 * public tasks createTasks(@RequestBody tasks task)
 	{
 		return task_repository.save(task);
+		
 	}
+	 */
 	
 	
 	//Update Task Function
-	@PutMapping("/tasks/{id}")
+	@PutMapping("/editTask/{id}")
 	public ResponseEntity<tasks> updateTasks(@PathVariable Long id, @RequestBody tasks taskDetails)
 	{
 		tasks task = task_repository.findById(id).orElseThrow(
-				()-> new ResourceNotFoundException("Employee not exist with id :" + id));
+				()-> new ResourceNotFoundException("Task not exist with id :" + id));
 		
 		task.set_task_name(taskDetails.get_task_name());
 		task.set_description(taskDetails.get_description());
@@ -68,11 +114,11 @@ public class TasksController {
 	}
 	
 	//Delete Task Function
-	@DeleteMapping("/tasks/{id}")
+	@DeleteMapping("/deleteTask/{id}")
 	public ResponseEntity<Map <String, Boolean>> deleteTasks(@PathVariable Long id)
 	{
 		tasks task = task_repository.findById(id).orElseThrow(
-				()-> new ResourceNotFoundException("Employee not exist with id :" + id));
+				()-> new ResourceNotFoundException("Task not exist with id :" + id));
 		
 		task_repository.delete(task);
 		Map<String, Boolean> response = new HashMap <> ();

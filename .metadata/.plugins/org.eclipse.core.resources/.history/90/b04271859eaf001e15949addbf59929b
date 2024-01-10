@@ -1,0 +1,37 @@
+package com.example.todolist;
+
+
+
+import java.util.concurrent.CompletableFuture.AsynchronousCompletionTask;
+
+import java.time.LocalDate;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import com.example.todolist.model.tasks;
+import com.example.todolist.repository.TaskRepository;
+
+@SpringBootApplication
+public class TodolistApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(TodolistApplication.class, args);
+	}
+	
+	@Bean
+	public CommandLineRunner tasks( TaskRepository taskRepository)
+	{
+		return (args) ->
+		{
+		  tasks task1 = new tasks("Task 1", "Description 1", "Pending", new Date());
+		  tasks task2 = new tasks("Task 2", "Description 2", "Completed", new Date());
+		  
+		  taskRepository.save(task1);
+		  taskRepository.save(task2);
+		  
+		};
+	}
+
+}

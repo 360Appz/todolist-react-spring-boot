@@ -28,19 +28,23 @@ class ViewTaskComponent extends Component
             <div>
             <br></br>
             <div className = "card col-md-6 offset-md-3">
-                <h3 className = "text-center"> View Employee Details</h3>
+                <h3 className = "text-center"> Task Details</h3>
                 <div className = "card-body">
                     <div className = "row">
-                        <label> Employee First Name: </label>
-                        <div> { this.state.employee.firstName }</div>
+                        <label> Task Name </label>
+                        <div> { this.state.task.taskName }</div>
                     </div>
                     <div className = "row">
-                        <label> Employee Last Name: </label>
-                        <div> { this.state.employee.lastName }</div>
+                        <label> Task Description</label>
+                        <div> { this.state.task.taskDescription }</div>
                     </div>
                     <div className = "row">
-                        <label> Employee Email ID: </label>
-                        <div> { this.state.employee.emailId }</div>
+                        <label> Task Status </label>
+                        <div> { this.state.task.taskStatus}</div>
+                    </div>
+                    <div className="row">
+                        <label>Due Date </label>
+                        <div> { this.state.task.dueDate }</div>
                     </div>
                 </div>
 

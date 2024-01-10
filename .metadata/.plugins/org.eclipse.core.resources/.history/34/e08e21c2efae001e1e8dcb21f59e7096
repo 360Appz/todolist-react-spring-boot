@@ -1,0 +1,5 @@
+package dummy_data;
+
+public class DatabaseLoader {
+
+}

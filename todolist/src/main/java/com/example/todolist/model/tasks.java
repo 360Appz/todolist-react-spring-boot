@@ -1,8 +1,13 @@
 package com.example.todolist.model;
 
+import java.util.Date;
+
 import org.aspectj.weaver.patterns.HasMemberTypePatternForPerThisMatching;
 
 import jakarta.persistence.*;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="tasks_spring")
@@ -18,11 +23,16 @@ public class tasks {
 	@Column(name="description")
 	private String description;
 	
-	@Column(name="status")
-	private String status;
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "status_id")
+	//@Column(name="status")
+	private taskStatus status;
 	
 	@Column(name="due_date")
-	private int due_date;
+	private Date due_date;
+	
+	@Column(name="timestamp")
+    private Timestamp timestamp;
 	
 	//Picture upload
 	//Tagging
@@ -33,9 +43,10 @@ public class tasks {
 	{
 		
 	}
-	public tasks(String description, String status, int due_date)
+	public tasks(String task_name, String description, taskStatus status, Date due_date)
 	{
 		super();
+		this.task_name = task_name;
 		this.description = description;
 		this.status = status;
 		this.due_date = due_date;
@@ -67,21 +78,32 @@ public class tasks {
 		this.description = description;
 	}
 	
-	public String get_status()
+	public taskStatus get_status()
 	{
 		return status;
 	}
-	public void set_status(String status)
+	public void set_status(taskStatus status)
 	{
 		this.status = status;
 	}
-	public int get_date()
+	public Date get_date()
 	{
 		return due_date;
 	}
-	public void set_date(int due_date)
+	public void set_date(Date due_date)
 	{
 		this.due_date = due_date;
 	}
+	
+	public Timestamp getTimestamp()
+	{
+		return timestamp;
+	}
+	
+	public void setTimestamp(Timestamp timestamp)
+	{
+		this.timestamp = timestamp;
+	}
+	
 
 }

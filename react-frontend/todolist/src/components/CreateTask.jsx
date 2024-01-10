@@ -1,132 +1,127 @@
 
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import TaskService from '../services/TaskService';
+import { useNavigate } from 'react-router-dom';
 
-class CreateTaskComponent extends Component
+
+
+
+// Create / Edit Page
+function CreateTaskComponent ()
 {
-    constructor(props)
-   {
-    this.state = {
-        id: this.props.match.params.id, //Retrieves id from API route
-        taskName: "",
+    const navigate = useNavigate(); //Navigation
+    const [message, setMessage] =  useState('');//Display submission message
+    const[statuses, showStatus] = useState([]); //Shows available task status
+
+    const [formData, setFormData] = useState({
+        taskName:"",
         taskDescription:"",
         taskStatus:"",
-        dueDate:""
-    }
-    this.changeTaskNameHandler = this.changeTaskNameHandler.bind(this);
-    this.changeTaskDescriptionHandler = this.changeTaskDescriptionHandler.bind(this);
-    this.changeStatusHandler = this.changeStatusHandler.bind(this);
-    this.changeDueDateHandler = this.changeDueDateHandler.bind(this);
-    this.saveOrUpdateTask = this.saveOrUpdateTask.bind(this);
-   }
+        dueDate:"",
 
-   componentDidMount()
-   {
-     if(this.state.id === '_add')
-     {
-        return
-     }
-     else{
-        TaskService.getTaskById(this.state.id).then(
-            (res) => {
-                let task = res.data;
-                this.setState({taskName : task.taskName, taskDescription : task.taskDescription, taskStatus: task.taskStatus, dueDate : task.dueDate})
-            }
-        )
-     }
-   }
-   saveOrUpdateTask = (e) =>
-   {
-      e.preventDefault();
-      let task = { taskName:this.state.taskName, taskDescription : this.state.taskDescription,
-    taskStatus : this.state.taskStatus, dueDate : this.state.dueDate  };
-     console.log(`task =>` + JSON.stringify(task));
+    });
 
-     if(this.state.id == "_add")
-     {
-        TaskService.createTask(task).then (
-            res => {this.props.history.push('/tasks');}
-        );
-     }
-     else{
-        TaskService.updateTask(task, this.state.id).then(
-            res => {
-                this.props.history.push('/tasks');
-            }
-        )
-     }
-   }
-   changeTaskNameHandler = (event) =>
-   {
-    this.setState({taskName : event.target.value});
-   }
-   changeTaskDescriptionHandler = (event) =>
-   {
-    this.setState({taskDescription : event.target.value});
-   }
+    const getStatuses = () =>
+    {
+        TaskService.getStatus().then((res) => 
+        {
+            showStatus(res.data);
+            //console.log(res.data);
+        });
+    };
 
-   changeStatusHandler = (event) =>
+ 
+   const createTask =  async (e) =>
    {
-    this.setState({taskStatus: event.target.value});
-   }
-   changeDueDateHandler = (event) =>
-   {
-    this.setState({dueDate: event.target.value});
-   }
-   cancel()
-   {
-     this.props.history.push('/tasks');
-   }
-   getTitle()
-   {
-     if(this.state.id === "_add")
-     {
-        return <h3 className='text-center'> Add Task</h3>
-     }
-     else
-     {
-        return <h3 className='text-center'> Return Task</h3>
-     }
-   }
+      e.preventDefault(); //Prevent reload page when form submission
 
-   render()
+      try
+      {
+        const response = await TaskService.createTask(formData)
+        {
+            setMessage('Success: Data stored successfully');
+            console.log(response.data);
+        }
+
+      }
+      catch(error)
+      {
+        setMessage('Error: Failed to store data');
+        console.error(error);
+      }
+     
+    
+   };
+   
+   const cancel = () =>
    {
+        navigate('/');
+   };
+
+   const handleInput = (e) =>
+   {
+        const {name, value} = e.target;
+        setFormData({
+            ...formData,
+            [name]:value,
+
+        });
+   };
+
+   //Display statuses
+   useEffect(() => {
+    getStatuses();
+
+    }, []);
+   
+   
     return (
         <div>
             <br></br>
             <div className='container'>
                 <div className='row'>
                 <div className = "card col-md-6 offset-md-3 offset-md-3">
-                    {
-                        this.getTitle()
-                    }
+                  
                     <div className='card-body'>
-                        <form>
+                        <form onSubmit={createTask} method='POST'>
                             <div className='form-group'>
                                 <label>Task Name </label>
-                                <input placeholder='Task Name' name="taskName" className='form-control' value={this.state.taskName} 
-                                onChange={this.changeTaskNameHandler}/>
+                                <input  name="taskName" className='form-control' value={formData.taskName} 
+                                onChange={handleInput}/>
 
                             </div>
 
                             <div className='form-group'>
                             <label>Task Description </label>
-                            <input placeholder='Task Description' name="taskDescription" className='form-control' value={this.state.taskDescription} 
-                                onChange={this.changeTaskDescriptionHandler}/>
+                            <textarea  name="taskDescription" className='form-control' value={formData.taskDescription} 
+                                onChange={handleInput}/>
                             </div>
 
                             <div className='form-group'>
                             <label>Task Status </label>
-                            <input placeholder='Task Status' name="taskStatus" className='form-control' value={this.state.taskStatus} 
-                                onChange={this.changeStatusHandler}/>
+                            
+                            <select  name="taskStatus" className='form-control' value={formData.taskStatus}  onChange={handleInput} >
+                                    <option value="" disabled selected>Select your option</option>
+                                {statuses.map((status, index) => (
+                                    
+                                <option key={index} value={index}>{status}</option>                
+                                ))};
+                            </select>
+                              
                             </div>
 
                             <div className='form-group'>
                             <label>Due Date </label>
-                            <input type="date" placeholder='Due Date' name="dueDate" className='form-control' value={this.state.dueDate} 
-                                onChange={this.dueDate}/>
+                            <input type="date"  name="dueDate" className='form-control' value={formData.dueDate} 
+                                onChange={handleInput}/>
                             </div>
-
+                            <p></p>
+                            <div>
+                                <p>
+                        <button type='submit' className='btn btn-primary' onClick={createTask}> Create Task</button>
+                        <button type='button' className='btn btn-danger' onClick={cancel}> Cancel</button>
+                        </p>
+                        </div>
                         </form>
                     </div>
                 </div>
@@ -135,8 +130,8 @@ class CreateTaskComponent extends Component
             </div>
         </div>
     )
-   }
+   
 
 }
 
-export default CreateTaskComponent
+export default CreateTaskComponent;

@@ -1,0 +1,27 @@
+package dummy_data;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import com.example.todolist.model.tasks;
+import com.example.todolist.repository.TaskRepository;
+
+@Component
+public class DatabaseLoader implements CommandLineRunner {
+	
+	private final TaskRepository repository;
+	
+	@Autowired
+	public DatabaseLoader (TaskRepository repository)
+	{
+		this.repository = repository;
+	}
+	
+	@Override
+	public void run(String...strings) throws Exception
+	{
+		this.repository.save(new tasks("Test", "Test Description", "Pending", 2023));
+	}
+
+}
