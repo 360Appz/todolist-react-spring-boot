@@ -1,0 +1,19 @@
+package com.example.todolist.services;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.example.todolist.repository.TaskStatusRepository;
+import com.example.todolist.model.taskStatus;
+
+public class TaskStatusService {
+	 @Autowired
+	    private TaskStatusRepository task_status_repository;
+
+	    public Optional<taskStatus> findById(Long id) 
+	    {
+	        return task_status_repository.findById(id);
+	    }
+
+}

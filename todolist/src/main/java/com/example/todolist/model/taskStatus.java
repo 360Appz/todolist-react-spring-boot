@@ -13,7 +13,7 @@ public class taskStatus
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	
 	@Column(name = "status")
 	private String task_status;
@@ -26,13 +26,21 @@ public class taskStatus
 		
 	}
 	
+	//Setters for task status
 	public taskStatus(String task_status)
 	{
 		super();
 		this.task_status = task_status;
 		
+		
+		
 	}
 	
+	//Renders status & ID to front-end
+	public Long getId() 
+	{
+        return id;
+    }
 	public String getStatus()
 	{
 		return task_status;

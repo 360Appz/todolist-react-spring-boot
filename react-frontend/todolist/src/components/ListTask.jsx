@@ -18,7 +18,9 @@ function ListTaskComponent() {
     {
         TaskService.getTasks().then((res) => 
         {
+            console.log(res.data);
             setTasks(res.data);
+          
         });
     };
 
@@ -64,9 +66,9 @@ function ListTaskComponent() {
 
                                         <tr key = {task.id}>
                                              <td> {task.taskName} </td>   
-                                             <td> {task.taskDescription}</td>
-                                             <td> {task.taskStatus}</td>
-                                             <td> {task.duedate}</td>
+                                             <td> {task.description}</td>
+                                             <td> {task.status.status}</td>
+                                             <td> {task.dueDate}</td>
                                              <td>
                                                  <button onClick={ () => this.editTask(task.id)} className="btn btn-info">Update </button>
                                                  <button style={{marginLeft: "10px"}} onClick={ () => this.deleteTask(task.id)} className="btn btn-danger">Delete </button>

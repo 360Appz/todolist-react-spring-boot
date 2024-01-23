@@ -10,17 +10,18 @@ import { useNavigate } from 'react-router-dom';
 function CreateTaskComponent ()
 {
     const navigate = useNavigate(); //Navigation
-    const [message, setMessage] =  useState('');//Display submission message
+    const [message, setMessage] =  useState('');//Display submission message, and error if there is
     const[statuses, showStatus] = useState([]); //Shows available task status
 
     const [formData, setFormData] = useState({
         taskName:"",
-        taskDescription:"",
-        taskStatus:"",
+        description:"",
+        status: "",
         dueDate:"",
 
     });
 
+    //Renders status types to form
     const getStatuses = () =>
     {
         TaskService.getStatus().then((res) => 
@@ -37,11 +38,11 @@ function CreateTaskComponent ()
 
       try
       {
-        const response = await TaskService.createTask(formData)
-        {
-            setMessage('Success: Data stored successfully');
-            console.log(response.data);
-        }
+        console.log(formData);
+        const response = await TaskService.createTask(formData) 
+        setMessage('Success: Data stored successfully');
+        console.log(response.data, formData);
+        
 
       }
       catch(error)
@@ -60,12 +61,25 @@ function CreateTaskComponent ()
 
    const handleInput = (e) =>
    {
+        // Since e.target.value is a string, you need to convert it to a number
         const {name, value} = e.target;
+
+        if(name === "status")
+        {
+            const statusId = Number(value);
+            setFormData({
+                ...formData,
+                status:{id:statusId}, //Sets status instead of object, as spring boot expects an object
+    
+            });
+        }
+        else {
         setFormData({
             ...formData,
             [name]:value,
 
         });
+        }
    };
 
    //Display statuses
@@ -90,25 +104,28 @@ function CreateTaskComponent ()
                                 onChange={handleInput}/>
 
                             </div>
+                            <br/>
 
                             <div className='form-group'>
                             <label>Task Description </label>
-                            <textarea  name="taskDescription" className='form-control' value={formData.taskDescription} 
+                            <textarea  name="description" className='form-control' value={formData.description} 
                                 onChange={handleInput}/>
                             </div>
 
+                            <br/>
+
                             <div className='form-group'>
-                            <label>Task Status </label>
-                            
-                            <select  name="taskStatus" className='form-control' value={formData.taskStatus}  onChange={handleInput} >
-                                    <option value="" disabled selected>Select your option</option>
-                                {statuses.map((status, index) => (
+                            <label>Task Status </label>                          
+                            <select  name="status" className='form-control' value={formData.status.id}  onChange={handleInput} >
                                     
-                                <option key={index} value={index}>{status}</option>                
+                                {statuses.map((status) => (
+                                   // console.log(statuses),
+                                <option  value={status.id}>{status.status}</option>                
                                 ))};
-                            </select>
-                              
+                            </select>                             
                             </div>
+
+                            <br/>
 
                             <div className='form-group'>
                             <label>Due Date </label>

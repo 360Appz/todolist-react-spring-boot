@@ -26,7 +26,7 @@ public class TodolistApplication {
 		SpringApplication.run(TodolistApplication.class, args);
 	}
 	
-	@Bean
+	/*@Bean
 	public CommandLineRunner taskStatus(TaskStatusRepository taskStatusRepository)
 	{
 		return (args) ->
@@ -49,9 +49,9 @@ public class TodolistApplication {
 			
 			taskStatusRepository.save(status1);
 			taskStatusRepository.save(status2);
-			taskStatusRepository.save(status3);*/
+			taskStatusRepository.save(status3);
 		  
 		};
-	}
+	}*/
 
 }

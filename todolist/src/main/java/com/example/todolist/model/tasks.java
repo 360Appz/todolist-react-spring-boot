@@ -1,8 +1,12 @@
 package com.example.todolist.model;
 
 import java.util.Date;
+import java.util.Optional;
 
 import org.aspectj.weaver.patterns.HasMemberTypePatternForPerThisMatching;
+
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.*;
 
@@ -17,19 +21,27 @@ public class tasks {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(name = "task_name")
-	private String task_name;
+	@Column(name = "taskName")
+	private String taskName;
 	
 	@Column(name="description")
 	private String description;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "status_id")
-	//@Column(name="status")
-	private taskStatus status;
+	//Foreign key that connects to primary key in taskStatus table , (cascade = CascadeType.ALL)
+	/*@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "status",  referencedColumnName = "id")
+	private taskStatus status;*/
 	
-	@Column(name="due_date")
-	private Date due_date;
+	 @ManyToOne(cascade = CascadeType.MERGE)
+	 @JoinColumn(name = "status", referencedColumnName = "id")
+	//@Column(name="status")
+	private taskStatus statusId;
+	
+	 	 
+	//Date
+	@JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Kuala Lumpur")
+	@Column(name="dueDate")
+	private Date dueDate;
 	
 	@Column(name="timestamp")
     private Timestamp timestamp;
@@ -37,19 +49,21 @@ public class tasks {
 	//Picture upload
 	//Tagging
 	
+	/*--------------------------------------------------------------*/
+	
 	//Getters and Setters
 	
 	public tasks()
 	{
 		
 	}
-	public tasks(String task_name, String description, taskStatus status, Date due_date)
+	public tasks(String taskName, String description, taskStatus statusId, Date dueDate)
 	{
 		super();
-		this.task_name = task_name;
+		this.taskName = taskName;
 		this.description = description;
-		this.status = status;
-		this.due_date = due_date;
+		this.statusId = statusId;
+		this.dueDate = dueDate;
 	}
 	public long getId()
 	{
@@ -60,39 +74,57 @@ public class tasks {
 		this.id = id;
 	}
 	
-	public String get_task_name()
+	public String getTaskName()
 	{
-		return task_name;
+		return taskName;
 	}
-	public void set_task_name(String task_name)
+	public void setTaskName(String taskName)
 	{
-		this.task_name = task_name;
+		this.taskName = taskName;
 	}
 	
-	public String get_description()
+	public String getDescription()
 	{
 		return description;
 	}
-	public void set_description(String description)
+	public void setDescription(String description)
 	{
 		this.description = description;
 	}
 	
-	public taskStatus get_status()
+	//Getter & Setter for Status object when rendered to front-end
+	/*public taskStatus getStatus()
 	{
 		return status;
+		
 	}
-	public void set_status(taskStatus status)
+	public void setStatus(taskStatus status)
 	{
 		this.status = status;
-	}
-	public Date get_date()
+		
+	}*/
+	public taskStatus getStatus()
 	{
-		return due_date;
+		return statusId;
+		
 	}
-	public void set_date(Date due_date)
+	public void setStatus(taskStatus statusId)
 	{
-		this.due_date = due_date;
+		this.statusId = statusId;
+		
+	}
+	
+	
+	
+	
+	
+	public Date getDate()
+	{
+		return dueDate;
+	}
+	public void setDate(Date dueDate)
+	{
+		this.dueDate = dueDate;
 	}
 	
 	public Timestamp getTimestamp()
